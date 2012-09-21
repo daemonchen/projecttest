@@ -1,9 +1,9 @@
-Ext.define('projecttest.model.detailmodel', {
+/*Ext.define('projecttest.model.detailmodel', {
     extend: 'Ext.data.Model',
     config: {
         fields: ['title', 'link', 'description','language','pubDate','lastBuildDate','ttl']
     }
-});
+});*/
 Ext.define('projecttest.controller.listcontroller', {
     extend: 'Ext.app.Controller',
     requires:['Ext.data.reader.Xml','projecttest.store.detailstore'],
@@ -15,7 +15,7 @@ Ext.define('projecttest.controller.listcontroller', {
         control: {
             mainlistview:{
                 itemtap:function(list,index,item,e,o){
-                    var detailstore = Ext.create('Ext.data.Store', {
+                    /*var detailstore = Ext.create('Ext.data.Store', {
                         model: 'projecttest.model.detailmodel',                        
                         proxy: {
                             type: 'ajax',
@@ -26,18 +26,33 @@ Ext.define('projecttest.controller.listcontroller', {
                                 rootProperty:'channel'
                             }
                         }
-                    });
+                    });*/
                     var detailCmp=Ext.ComponentQuery.query('#maincontent');
                     var mainbody= Ext.ComponentQuery.query('main');
                     var index=index;
+                    Ext.Ajax.request({
+                        url:'app/data/rss.xml',
+                        success:function(data){
+                            var targetHtml = data.responseXML.getElementsByTagName('item');
+                            var targetItem=targetHtml[index];
+                            var curlen=targetItem.childNodes.length-1;
+                                console.log(targetItem.childNodes);
+                                targetItem=targetItem.childNodes[19];
+                                //Ext.String.htmlEncode(targetItem.toString());
+                                console.log(targetItem.constructor);
+                                console.log(targetItem);
+                                detailCmp[0].setHtml(targetItem);
+                        },
+                        failure:function(data){}
+                    });
                    /* var curstore=Ext.create('projecttest.store.detailstore', {
                         autoLoad: true
                     });*/
                     //console.log(curstore.getAt(0));
-                    detailstore.load(function(record,operation,success){
+                    /*detailstore.load(function(record,operation,success){
                         var targetHtml=record[index]['data']['description'];
                         detailCmp[0].setHtml(targetHtml);
-                    },this);
+                    },this);*/
                     mainbody[0].animateActiveItem(1,{type:'slide',direction:'left'});
                 }
             },
